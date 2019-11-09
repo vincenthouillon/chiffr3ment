@@ -1,5 +1,5 @@
 # chiffr3ment
-**Projet:** Application chiffrage de fichiers.
+**Projet:** Application chiffrement de fichiers.
 
 ## Aperçu
 :art:
