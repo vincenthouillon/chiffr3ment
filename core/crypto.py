@@ -8,8 +8,14 @@ from cryptography.fernet import Fernet
 
 
 class Crypto:
+    """Chiffrement déchiffrement de fichiers.
 
-    def open_file(self, path):
+    Utilisation:
+        Crypto.encrypt(path, password, password_confirmation)
+        Crypto.decrypt(path, password)
+    """
+
+    def __open_file(self, path):
         """Récupère le chemin du fichier à ouvrir et retourne le chemin, le
         nom du fichier, et le type de fichier.
 
@@ -24,7 +30,7 @@ class Crypto:
 
         return {'dirname': dirname, 'basename': basename, 'extension': extension}
 
-    def check_password(self, password, password2):
+    def __check_password(self, password, password2):
         """Vérifie la longueur du mot de passe (supérieur à 6 caractères) et
         contrôle si le mot de passe est identique à le vérification
 
@@ -37,26 +43,23 @@ class Crypto:
         """
         if len(password) < 6:
             return "len_pwd_error"
+        elif password != password2:
+            return "egal_pwd_error"
         else:
-            if password != password2:
-                return "egal_pwd_error"
-            else:
-                return "pwd_ok"
+            return password
 
-
-    def generate_key_from_pwd(self, password, password2):
+    def __generate_key_from_pwd(self, password):
         """Génère une clef de chiffrement à partir d'un mot de passe.
-        
+
         Arguments:
             password {str} -- Mot de passe
             password2 {str} -- Confirmation du mot de passe
-        
+
         Returns:
             str -- Clé de chiffrement
         """
-        good_password = self.check_password(password, password2)
-        password_provided = good_password
-        password = password_provided.encode() # Convert to type bytes
+        password_provided = password
+        password = password_provided.encode()  # Convert to type bytes
         salt = b'\xff\xb6\x9cH\xc7\xf4\x1b\x9ea%Z\xa8+\xeek\x94'
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
@@ -65,59 +68,76 @@ class Crypto:
             iterations=100000,
             backend=default_backend()
         )
-        key = base64.urlsafe_b64encode(kdf.derive(password)) # Can only use kdf once
+        key = base64.urlsafe_b64encode(
+            kdf.derive(password))  # Can only use kdf once
         return key
 
-    def encrypt(self, password, password2):
-        """Chiffrement d'un fichier avec d'un mot de passe.
-        
+    def encrypt(self, path, password, password2):
+        """Chiffrement d'un fichier avec un mot de passe.
+
         Arguments:
             password {str} -- Mot de passe
             password2 {str} -- Confirmation du mot de passe
         """
-        b_key = self.generate_key_from_pwd(password, password2)
-        key = b_key # Use one of the methods to get a key (it must be the same when decrypting)
-        input_file = 'requirements.txt'
-        output_file = 'requirements.encrypted'
+        good_password = self.__check_password(password, password2)
+        if good_password == 'len_pwd_error':
+            return 'len_pwd_error'
+        elif good_password == 'egal_pwd_error':
+            return 'egal_pwd_error'
+        else:
+            key = self.__generate_key_from_pwd(password)
 
-        with open(input_file, 'rb') as f:
-            data = f.read()
+            fn = self.__open_file(path)
+            encrypt_file = os.path.join(fn['dirname'], fn['basename'] + '.ch3')
 
-        fernet = Fernet(key)
-        encrypted = fernet.encrypt(data)
+            input_file = path
+            output_file = encrypt_file
 
-        with open(output_file, 'wb') as f:
-            f.write(encrypted)
+            with open(input_file, 'rb') as f:
+                data = f.read()
 
-    def decrypt(self, password, password2):
+            fernet = Fernet(key)
+            encrypted = fernet.encrypt(data)
+
+            with open(output_file, 'wb') as f:
+                f.write(encrypted)
+
+            return "encrypted file ✅"
+
+    def decrypt(self, path, password):
         """Déchiffrement du fichier avec un mot de passe.
-        
+
         Arguments:
             password {str} -- Mot de passe
             password2 {str} -- Confirmation du mot de passe
         """
-        b_key = self.generate_key_from_pwd(password, password2)
-        key = b_key # Use one of the methods to get a key (it must be the same as used in encrypting)
-        input_file = 'requirements.encrypted'
-        output_file = 'test.txt'
+        fn = self.__open_file(path)
+        encrypt_file = os.path.join(fn['dirname'], fn['basename'] + '.ch3')
+
+        input_file = path
+        output_file = os.path.join(fn['dirname'], fn['basename'][:-4])
 
         with open(input_file, 'rb') as f:
             data = f.read()
 
-        fernet = Fernet(key)
+        fernet = Fernet(password)
         encrypted = fernet.decrypt(data)
 
         with open(output_file, 'wb') as f:
             f.write(encrypted)
 
+        return "decrypted file ✅"
+
 
 if __name__ == "__main__":
     crypto = Crypto()
-    # path = input("Dir filename: ")
-    # print(crypto.open_file(path))
+    print('*' * 80)
+    print('* CHIFFR3MENT - Encrypt files before sending them to friends or coworkers.     *')
+    print('*' * 80)
 
     pwd = input('Enter password: ')
     pwd2 = input('Enter password confirmation: ')
-    # print(crypto.check_password('password', 'password'))
+    path = '/Users/vincent/Documents/code/chiffr3ment/requirements.txt.ch3'
 
-    print(crypto.decrypt(pwd, pwd2))
+    result = crypto.decrypt(path, pwd, pwd2)
+    print(result + '\n')
