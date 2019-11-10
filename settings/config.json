@@ -3,5 +3,10 @@
         "background": "#303032",
         "accent_color": "#22427B",
         "foreground": "#DFDFE0"
+    },
+    "custom": {
+        "background": "#303032",
+        "accent_color": "#F4B444",
+        "foreground": "#DFDFE0"
     }
 }
