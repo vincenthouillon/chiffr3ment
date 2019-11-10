@@ -111,8 +111,10 @@ class Crypto:
             password {str} -- Mot de passe
             password2 {str} -- Confirmation du mot de passe
         """
+
+        key = self.__generate_key_from_pwd(password)
+
         fn = self.__open_file(path)
-        encrypt_file = os.path.join(fn['dirname'], fn['basename'] + '.ch3')
 
         input_file = path
         output_file = os.path.join(fn['dirname'], fn['basename'][:-4])
@@ -120,7 +122,7 @@ class Crypto:
         with open(input_file, 'rb') as f:
             data = f.read()
 
-        fernet = Fernet(password)
+        fernet = Fernet(key)
         encrypted = fernet.decrypt(data)
 
         with open(output_file, 'wb') as f:
@@ -139,5 +141,5 @@ if __name__ == "__main__":
     pwd2 = input('Enter password confirmation: ')
     path = '/Users/vincent/Documents/code/chiffr3ment/requirements.txt.ch3'
 
-    result = crypto.decrypt(path, pwd, pwd2)
+    result = crypto.decrypt(path, pwd)
     print(result + '\n')

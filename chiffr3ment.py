@@ -1,15 +1,18 @@
 from tkinter import *
 from tkinter import filedialog
-from os.path import join
+from os.path import join, basename, getsize
 from json import load
+
+from core.crypto import *
 
 # "accent_color": "#01a3a4",
 
 THEME = "custom"
 
 class Chiffrement:
-    def __init__(self, root,):
+    def __init__(self, root):
         self.get_settings()
+        self.crypt = Crypto()
 
         # region: INITIALISE WINDOW
         self.root = root
@@ -157,17 +160,21 @@ class Chiffrement:
     def show_encrypt_decrypt(self):
         self.frm_add.pack_forget()
         
-        # self.btn_run.config(text="Dechiffrer")
-        self.btn_run.config(text="Chiffrer")
+        self.btn_run.config(text="Dechiffrer", command=self.encrypt)
+        # self.btn_run.config(text="Chiffrer", command=self.encrypt)
         
-        self.frm_encrypt.pack(fill="x", pady=15, anchor="n")
-        # self.frm_decrypt.pack(fill="x", pady=15, anchor="n")
+        # self.frm_encrypt.pack(fill="x", pady=15, anchor="n")
+        self.frm_decrypt.pack(fill="x", pady=15, anchor="n")
         self.btn_run.pack(side="right", anchor="s", pady=10)
         self.btn_cancel.pack(side="right", anchor="s", padx=20, pady=10)
+
+        file_name = basename(self.file.name)
+        size_name = getsize(self.file.name)/1024
+
+        self.lbl_instruction.config(text=f"{file_name} - {size_name:.2f} MB")
     
     def open_file(self, event):
-        file = filedialog.askopenfile(title="Choisir un fichier")
-        print(file.name)
+        self.file = filedialog.askopenfile(title="Choisir un fichier")
         self.show_encrypt_decrypt()
     
     def focus_entry(self, event):
@@ -183,8 +190,20 @@ class Chiffrement:
         self.btn_run.pack_forget()
         self.btn_cancel.pack_forget()
 
-        self.frm_add.pack(anchor="center", fill="x", pady=15)
+        self.ent_encrypt_pwd.delete(0, END)
+        self.ent_encrypt_confirm.delete(0, END)
+        self.ent_decrypt_pwd.delete(0, END)
 
+        self.frm_add.pack(anchor="center", fill="x", pady=15)
+    
+    def encrypt(self):
+        print('*' * 80)
+        pwd = self.ent_decrypt_pwd.get()
+
+        confirm = self.ent_encrypt_confirm.get()
+        print(self.file.name)
+        self.crypt.decrypt(self.file.name, pwd)
+    
 def main():
     root = Tk()
     app = Chiffrement(root)
