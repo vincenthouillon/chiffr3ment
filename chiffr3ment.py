@@ -1,13 +1,12 @@
 from tkinter import *
 from tkinter import filedialog
-from os.path import join, basename, getsize
+from tkinter.messagebox import showerror, showinfo
+from os.path import join, basename, getsize, splitext
 from json import load
 
 from core.crypto import *
 
-# "accent_color": "#01a3a4",
-
-THEME = "custom"
+THEME = "dark"
 
 class Chiffrement:
     def __init__(self, root):
@@ -78,6 +77,8 @@ class Chiffrement:
         self.ent_encrypt_pwd.focus()
         self.ent_decrypt_pwd.focus()
         self.ent_encrypt_pwd.bind("<Return>", self.focus_entry)
+        self.ent_encrypt_confirm.bind("<Return>", self.ent_encrypt)
+        self.ent_decrypt_pwd.bind("<Return>", self.ent_decrypt)
 
         # endregion: ENTRY
 
@@ -159,12 +160,16 @@ class Chiffrement:
     
     def show_encrypt_decrypt(self):
         self.frm_add.pack_forget()
+
+        extension = splitext(self.file.name)[1]
+        if extension == ".ch3":
+            self.btn_run.config(text="Dechiffrer", command=self.decrypt)
+            self.frm_decrypt.pack(fill="x", pady=15, anchor="n")
         
-        self.btn_run.config(text="Dechiffrer", command=self.encrypt)
-        # self.btn_run.config(text="Chiffrer", command=self.encrypt)
+        else:
+            self.btn_run.config(text="Chiffrer", command=self.encrypt)
+            self.frm_encrypt.pack(fill="x", pady=15, anchor="n")
         
-        # self.frm_encrypt.pack(fill="x", pady=15, anchor="n")
-        self.frm_decrypt.pack(fill="x", pady=15, anchor="n")
         self.btn_run.pack(side="right", anchor="s", pady=10)
         self.btn_cancel.pack(side="right", anchor="s", padx=20, pady=10)
 
@@ -174,8 +179,13 @@ class Chiffrement:
         self.lbl_instruction.config(text=f"{file_name} - {size_name:.2f} MB")
     
     def open_file(self, event):
-        self.file = filedialog.askopenfile(title="Choisir un fichier")
-        self.show_encrypt_decrypt()
+        try:
+            self.file = filedialog.askopenfile(title="Choisir un fichier")
+            self.show_encrypt_decrypt()
+
+        except:
+            self.cancel()
+            showerror("Erreur", "Veuillez choisir un fichier !!!")
     
     def focus_entry(self, event):
         self.ent_encrypt_confirm.focus()
@@ -197,12 +207,32 @@ class Chiffrement:
         self.frm_add.pack(anchor="center", fill="x", pady=15)
     
     def encrypt(self):
-        print('*' * 80)
-        pwd = self.ent_decrypt_pwd.get()
-
+        pwd = self.ent_encrypt_pwd.get()
         confirm = self.ent_encrypt_confirm.get()
-        print(self.file.name)
+
+        _function = self.crypt.encrypt(self.file.name, pwd, confirm)
+
+        if _function == "len_pwd_error":
+            showerror("Erreur",
+                      "Veuillez saisir un mot de passe d'au moins 6 caractères")
+        
+        elif _function == "egal_pwd_error":
+            showerror("Erreur", "Les mots de passe ne sont pas identique")
+        
+        else:
+            showinfo("Succès", "Votre fichier a bien été chiffré")
+            self.cancel()
+    
+    def decrypt(self):
+        pwd = self.ent_decrypt_pwd.get()
         self.crypt.decrypt(self.file.name, pwd)
+        self.cancel()
+    
+    def ent_encrypt(self, event):
+        self.encrypt()
+
+    def ent_decrypt(self, event):
+        self.decrypt()
     
 def main():
     root = Tk()
