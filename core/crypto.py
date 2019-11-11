@@ -135,7 +135,7 @@ class Crypto:
             with open(output_file, 'wb') as f:
                 f.write(encrypted)
         except:
-            return "incorrect password"
+            return "incorrect_pwd"
 
         return "decrypted file"
 

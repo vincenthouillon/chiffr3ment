@@ -210,13 +210,13 @@ class Chiffrement:
         pwd = self.ent_encrypt_pwd.get()
         confirm = self.ent_encrypt_confirm.get()
 
-        _function = self.crypt.encrypt(self.file.name, pwd, confirm)
+        function_encrypted = self.crypt.encrypt(self.file.name, pwd, confirm)
 
-        if _function == "len_pwd_error":
+        if function_encrypted == "len_pwd_error":
             showerror("Erreur",
                       "Veuillez saisir un mot de passe d'au moins 6 caractères")
         
-        elif _function == "egal_pwd_error":
+        elif function_encrypted == "egal_pwd_error":
             showerror("Erreur", "Les mots de passe ne sont pas identique")
         
         else:
@@ -225,8 +225,14 @@ class Chiffrement:
     
     def decrypt(self):
         pwd = self.ent_decrypt_pwd.get()
-        self.crypt.decrypt(self.file.name, pwd)
-        self.cancel()
+        function_decrypted = self.crypt.decrypt(self.file.name, pwd)
+
+        if function_decrypted == "incorrect_pwd":
+            showerror("Erreur", "Mot de passe incorrect")
+        
+        else:
+            showinfo("Succès", "Votre fichier a bien été déchiffré")
+            self.cancel()
     
     def ent_encrypt(self, event):
         self.encrypt()
