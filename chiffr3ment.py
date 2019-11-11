@@ -98,6 +98,8 @@ class Chiffrement:
                                                 bg=self.ACCENT, fg=self.BG,
                                                 font=("Sans Serif", 7),
                                                 anchor="w", relief="flat",
+                                                highlightbackground=self.ACCENT,
+                                                activebackground=self.ACCENT,
                                                 command=self.show_pwd_encrypt)
 
         self.ckb_show_pwd_decrypt = Checkbutton(self.frm_decrypt,
@@ -106,6 +108,8 @@ class Chiffrement:
                                                 bg=self.ACCENT, fg=self.BG,
                                                 font=("Sans Serif", 7),
                                                 anchor="w", relief="flat",
+                                                highlightbackground=self.ACCENT,
+                                                activebackground=self.ACCENT,
                                                 command=self.show_pwd_decrypt)
 
         # endregion: CHECKBUTTON
@@ -168,7 +172,8 @@ class Chiffrement:
             self.root.iconbitmap("icons/icon.ico")
 
         else:
-            self.root.iconphoto(bitmap="icons/icon.png")
+           img = Image("photo", file="icons/icon.png")
+           self.root.tk.call("wm", "iconphoto", self.root._w, img)
 
     def show_pwd_encrypt(self):
         """
