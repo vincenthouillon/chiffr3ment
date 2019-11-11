@@ -1,5 +1,5 @@
 from json import load
-from os import chdir, getcwd
+from os import chdir, getcwd, name
 from os.path import basename, getsize, join, splitext
 from tkinter import *
 from tkinter import filedialog
@@ -24,6 +24,7 @@ class Chiffrement:
         self.root.geometry(f"250x285")
         self.root.resizable(False, False)
         self.root.configure(bg=self.BG, padx=10, pady=10)
+        self.icones()
         self.root.focus_force()
 
         # endregion: INITIALISE WINDOW
@@ -158,6 +159,16 @@ class Chiffrement:
         self.BG = theme[self.THEME]["background"]
         self.FG = theme[self.THEME]["foreground"]
         self.ACCENT = theme[self.THEME]["accent_color"]
+
+    def icones(self):
+        """
+        Affiche l'icone en fonction du système d'exploitation"
+        """
+        if "nt" == name:
+            self.root.iconbitmap("icons/icon.ico")
+
+        else:
+            self.root.iconphoto(bitmap="icons/icon.png")
 
     def show_pwd_encrypt(self):
         """

@@ -18,7 +18,7 @@ def check():
             }
         }
 
-        with open("themes.json", "w", encoding="utf8") as write:
+        with open("themes.json", "w") as write:
             dump(theme, write, indent=4)
 
     if "languages.json" not in listdir("."):
@@ -31,17 +31,19 @@ def check():
                 "button_cancel": "Annuler",
                 "button_encrypt": "Chiffrer",
                 "button_decrypt":"Déchiffrer",
+                "title_openfile": "Choisir un fichier",
                 "title_window_error": "Erreur",
                 "title_window_success": "Succès",
                 "msg_error_file": "Veuillez choisir un fichier",
                 "msg_error_length_pwd": "Veuillez saisir un mot de passe d'au moins 6 caractères",
                 "msg_error_egal_pwd": "Les mots de passe ne sont pas identique",
                 "msg_success_encrypt": "Votre fichier a bien été chiffré",
-                "msg_success_decrypt": "Votre fichier a bien été déchiffré"
+                "msg_success_decrypt": "Votre fichier a bien été déchiffré",
+                "msg_error_pwd": "Mot de passe incorrect"
             }
         }
 
-        with open("languages.json", "w", encoding="utf8") as write:
+        with open("languages.json", "w") as write:
             dump(language, write, indent=4)
     
     if "config.json" not in listdir("."):
@@ -52,5 +54,5 @@ def check():
             }
         }
 
-        with open("config.json", "w", encoding="utf8") as write:
+        with open("config.json", "w") as write:
             dump(settings, write, indent=4)
