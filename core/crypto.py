@@ -1,29 +1,28 @@
-import os
 import base64
+import os
 
+from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.fernet import Fernet
 
 
 class Crypto:
     """Chiffrement déchiffrement de fichiers.
 
     Utilisation:
-        Crypto.encrypt(path, password, password_confirmation)
-        Crypto.decrypt(path, password)
+     - Crypto.encrypt(path, password, password_confirmation)
+     - Crypto.decrypt(path, password)
     """
-
     def __open_file(self, path):
         """Récupère le chemin du fichier à ouvrir et retourne le chemin, le
         nom du fichier, et le type de fichier.
 
         Arguments:
-            path {str} -- Chemin vers le fichier.
+         - path {str} -- Chemin vers le fichier.
 
         Returns:
-            dict -- dirname, basename, extension
+         - dict -- dirname, basename, extension
         """
         dirname, basename = os.path.split(path)
         extension = os.path.splitext(basename)[1]
@@ -35,11 +34,11 @@ class Crypto:
         contrôle si le mot de passe est identique à le vérification
 
         Arguments:
-            password {str} -- Mot de passe
-            password2 {str} -- Vérification du moit de passe
+         - password {str} -- Mot de passe
+         - password2 {str} -- Vérification du moit de passe
 
         Returns:
-            str -- Messages d'erreur ou "pwd_ok"
+         - str -- Messages d'erreur ou "pwd_ok"
         """
         if len(password) < 6:
             return "len_pwd_error"
@@ -52,11 +51,11 @@ class Crypto:
         """Génère une clef de chiffrement à partir d'un mot de passe.
 
         Arguments:
-            password {str} -- Mot de passe
-            password2 {str} -- Confirmation du mot de passe
+         - password {str} -- Mot de passe
+         - password2 {str} -- Confirmation du mot de passe
 
         Returns:
-            str -- Clé de chiffrement
+         - str -- Clé de chiffrement
         """
         password_provided = password
         password = password_provided.encode()  # Convert to type bytes
@@ -76,10 +75,15 @@ class Crypto:
         """Chiffrement d'un fichier avec un mot de passe.
 
         Arguments:
-            password {str} -- Mot de passe
-            password2 {str} -- Confirmation du mot de passe
+         - path {str} -- Chemin vers le fichier à chiffrer
+         - password {str} -- Mot de passe
+         - password2 {str} -- Confirmation du mot de passe
+        
+        Returns:
+         - str -- Messages d'erreur ou de confirmation
         """
         good_password = self.__check_password(password, password2)
+
         if good_password == 'len_pwd_error':
             return 'len_pwd_error'
         elif good_password == 'egal_pwd_error':
@@ -102,16 +106,18 @@ class Crypto:
             with open(output_file, 'wb') as f:
                 f.write(encrypted)
 
-            return "encrypted file ✅"
+            return "encrypted file"
 
     def decrypt(self, path, password):
         """Déchiffrement du fichier avec un mot de passe.
 
         Arguments:
-            password {str} -- Mot de passe
-            password2 {str} -- Confirmation du mot de passe
+         - path {str} -- Chemin vers le fichier à déchiffrer
+         - password {str} -- Mot de passe
+        
+        Returns:
+         - str -- Messages d'erreur ou de confirmation
         """
-
         key = self.__generate_key_from_pwd(password)
 
         fn = self.__open_file(path)
@@ -122,24 +128,41 @@ class Crypto:
         with open(input_file, 'rb') as f:
             data = f.read()
 
-        fernet = Fernet(key)
-        encrypted = fernet.decrypt(data)
+        try:
+            fernet = Fernet(key)
+            encrypted = fernet.decrypt(data)
 
-        with open(output_file, 'wb') as f:
-            f.write(encrypted)
+            with open(output_file, 'wb') as f:
+                f.write(encrypted)
+        except:
+            return "incorrect password"
 
-        return "decrypted file ✅"
+        return "decrypted file"
 
 
 if __name__ == "__main__":
+    from getpass import getpass
+    from tkinter import filedialog
+    from tkinter import Tk
+
     crypto = Crypto()
+    os.system('clear')
     print('*' * 80)
     print('* CHIFFR3MENT - Encrypt files before sending them to friends or coworkers.     *')
     print('*' * 80)
 
-    pwd = input('Enter password: ')
-    pwd2 = input('Enter password confirmation: ')
-    path = '/Users/vincent/Documents/code/chiffr3ment/requirements.txt.ch3'
+    Tk().withdraw()
+    path = filedialog.askopenfilename(title="Open file")
 
-    result = crypto.decrypt(path, pwd)
-    print(result + '\n')
+    if os.path.splitext(path)[1] == '.ch3':
+        print('-- File encrypted --')
+        pwd = getpass('Enter password: ')
+        result = crypto.decrypt(path, pwd)
+        print('==> ' + result + '\n')
+
+    else:
+        print('-- File not encrypted --')
+        pwd = getpass('Enter password: ')
+        pwd2 = getpass('Enter password confirmation: ')
+        result = crypto.encrypt(path, pwd, pwd2)
+        print('==> ' + result + '\n')
