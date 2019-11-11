@@ -1,18 +1,22 @@
 from json import load
+from os import chdir, getcwd
 from os.path import basename, getsize, join, splitext
 from tkinter import *
 from tkinter import filedialog
 from tkinter.messagebox import showerror, showinfo
 
 from core.crypto import *
-
-THEME = "dark"
-
+from core.check_settings import *
 
 class Chiffrement:
     def __init__(self, root):
+        chdir(f"{getcwd()}/..")
+
         self.get_settings()
         self.crypt = Crypto()
+
+        self.THEME = "dark"
+        self.LANGUAGE = "fr"
 
         # region: INITIALISE WINDOW
         self.root = root
@@ -37,21 +41,24 @@ class Chiffrement:
                                font=("Sans Serif", 11, "bold"))
 
         self.lbl_instruction = Label(self.root,
-                                     text="Cliquez pour ouvrir un fichier",
+                                     text=self.MY_LANGUAGE[self.LANGUAGE]["instruction"],
                                      bg=self.BG, fg=self.FG)
 
         self.lbl_add = Label(self.frm_add, text="+", bg=self.ACCENT, fg=self.BG,
                              font=("Sans Serif", 75, "bold"))
 
-        self.lbl_encrypt_pwd = Label(self.frm_encrypt, text="Mot de passe",
+        self.lbl_encrypt_pwd = Label(self.frm_encrypt,
+                                     text=self.MY_LANGUAGE[self.LANGUAGE]["password"],
                                      bg=self.ACCENT, fg=self.BG,
                                      font=("Sans Serif", 7), anchor="w")
 
-        self.lbl_encrypt_confirm = Label(self.frm_encrypt, text="Confirmation",
+        self.lbl_encrypt_confirm = Label(self.frm_encrypt,
+                                         text=self.MY_LANGUAGE[self.LANGUAGE]["confirm"],
                                          bg=self.ACCENT, fg=self.BG,
                                          font=("Sans Serif", 7), anchor="w")
 
-        self.lbl_decrypt_pwd = Label(self.frm_decrypt, text="Mot de passe",
+        self.lbl_decrypt_pwd = Label(self.frm_decrypt,
+                                     text=self.MY_LANGUAGE[self.LANGUAGE]["password"],
                                      bg=self.ACCENT, fg=self.BG,
                                      font=("Sans Serif", 7), anchor="w")
 
@@ -85,14 +92,16 @@ class Chiffrement:
 
         # region: CHECKBUTTON
         self.ckb_show_pwd_encrypt = Checkbutton(self.frm_encrypt,
-                                                text="Voir mots de passe",
+                                                text=self.MY_LANGUAGE[self.LANGUAGE]
+                                                ["checkbox_show_password"],
                                                 bg=self.ACCENT, fg=self.BG,
                                                 font=("Sans Serif", 7),
                                                 anchor="w", relief="flat",
                                                 command=self.show_pwd_encrypt)
 
         self.ckb_show_pwd_decrypt = Checkbutton(self.frm_decrypt,
-                                                text="Voir mot de passe",
+                                                text=self.MY_LANGUAGE[self.LANGUAGE]
+                                                ["checkbox_show_password"],
                                                 bg=self.ACCENT, fg=self.BG,
                                                 font=("Sans Serif", 7),
                                                 anchor="w", relief="flat",
@@ -104,7 +113,8 @@ class Chiffrement:
         self.btn_run = Button(fg="black", relief="flat", 
                               highlightbackground=self.BG)
 
-        self.btn_cancel = Button(text="Annuler", fg="black", relief="flat",
+        self.btn_cancel = Button(text=self.MY_LANGUAGE[self.LANGUAGE]["button_cancel"],
+                                 fg="black", relief="flat",
                                  command=self.cancel,
                                  highlightbackground=self.BG)
 
@@ -133,12 +143,21 @@ class Chiffrement:
         """
         Récupération des paramètres dans le fichier JSON
         """
-        with open(join("settings/config.json"), "r") as config:
+        with open("settings/config.json", "r") as config:
             config = load(config)
+        
+        with open("settings/themes.json", "r") as theme:
+            theme = load(theme)
+        
+        with open("settings/languages.json", "r") as language:
+            self.MY_LANGUAGE = load(language)
+        
+        self.THEME = config["settings"]["theme"]
+        self.LANGUAGE = config["settings"]["language"]
 
-        self.BG = config[THEME]["background"]
-        self.FG = config[THEME]["foreground"]
-        self.ACCENT = config[THEME]["accent_color"]
+        self.BG = theme[self.THEME]["background"]
+        self.FG = theme[self.THEME]["foreground"]
+        self.ACCENT = theme[self.THEME]["accent_color"]
 
     def show_pwd_encrypt(self):
         """
@@ -167,11 +186,15 @@ class Chiffrement:
 
         extension = splitext(self.file.name)[1]
         if extension == ".ch3":
-            self.btn_run.config(text="Dechiffrer", command=self.decrypt)
+            self.btn_run.config(text=self.MY_LANGUAGE[self.LANGUAGE]["button_decrypt"],
+                                command=self.decrypt)
+
             self.frm_decrypt.pack(fill="x", pady=15, anchor="n")
 
         else:
-            self.btn_run.config(text="Chiffrer", command=self.encrypt)
+            self.btn_run.config(text=self.MY_LANGUAGE[self.LANGUAGE]["button_encrypt"],
+                                command=self.encrypt)
+
             self.frm_encrypt.pack(fill="x", pady=15, anchor="n")
 
         self.btn_run.pack(side="right", anchor="s", pady=10, ipadx=4)
@@ -185,12 +208,15 @@ class Chiffrement:
 
     def open_file(self, event):
         try:
-            self.file = filedialog.askopenfile(title="Choisir un fichier")
+            self.file = filedialog.askopenfile(
+                title=self.MY_LANGUAGE[self.LANGUAGE]["title_openfile"])
+
             self.show_encrypt_decrypt()
 
         except:
             self.cancel()
-            showerror("Erreur", "Veuillez choisir un fichier !!!")
+            showerror(self.MY_LANGUAGE[self.LANGUAGE]["title_window_error"],
+                      self.MY_LANGUAGE[self.LANGUAGE]["msg_error_file"])
 
     def focus_entry(self, event):
         self.ent_encrypt_confirm.focus()
@@ -218,14 +244,17 @@ class Chiffrement:
         function_encrypted = self.crypt.encrypt(self.file.name, pwd, confirm)
 
         if function_encrypted == "len_pwd_error":
-            showerror("Erreur",
-                      "Veuillez saisir un mot de passe d'au moins 6 caractères")
+            showerror(self.MY_LANGUAGE[self.LANGUAGE]["title_window_error"],
+                      self.MY_LANGUAGE[self.LANGUAGE]["msg_error_length_pwd"])
 
         elif function_encrypted == "egal_pwd_error":
-            showerror("Erreur", "Les mots de passe ne sont pas identique")
+            showerror(self.MY_LANGUAGE[self.LANGUAGE]["title_window_error"],
+                      self.MY_LANGUAGE[self.LANGUAGE]["msg_error_egal_pwd"])
 
         else:
-            showinfo("Succès", "Votre fichier a bien été chiffré")
+            showinfo(self.MY_LANGUAGE[self.LANGUAGE]["title_window_success"],
+                     self.MY_LANGUAGE[self.LANGUAGE]["msg_success_encrypt"])
+
             self.cancel()
 
     def decrypt(self):
@@ -233,10 +262,13 @@ class Chiffrement:
         function_decrypted = self.crypt.decrypt(self.file.name, pwd)
 
         if function_decrypted == "incorrect_pwd":
-            showerror("Erreur", "Mot de passe incorrect")
+            showerror(self.MY_LANGUAGE[self.LANGUAGE]["title_window_error"],
+                      self.MY_LANGUAGE[self.LANGUAGE]["msg_error_pwd"])
 
         else:
-            showinfo("Succès", "Votre fichier a bien été déchiffré")
+            showinfo(self.MY_LANGUAGE[self.LANGUAGE]["title_window_success"],
+                     self.MY_LANGUAGE[self.LANGUAGE]["msg_success_decrypt"])
+
             self.cancel()
 
     def ent_encrypt(self, event):
@@ -247,6 +279,7 @@ class Chiffrement:
 
 
 def main():
+    check()
     root = Tk()
     app = Chiffrement(root)
     root.mainloop()
