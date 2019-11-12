@@ -1,6 +1,7 @@
 import base64
 import os
 
+# pip install cryptography
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -8,19 +9,19 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 
 class Crypto:
-    """Chiffrement déchiffrement de fichiers.
+    """Encryption decryption of files.
 
-    Utilisation:
+    Use:
      - Crypto.encrypt(path, password, password_confirmation)
      - Crypto.decrypt(path, password)
     """
 
     def __open_file(self, path):
-        """Récupère le chemin du fichier à ouvrir et retourne le chemin, le
-        nom du fichier, et le type de fichier.
+        """Retrieves the path of the file to open and returns the path, file 
+        name, and file type.
 
         Arguments:
-         - path {str} -- Chemin vers le fichier.
+         - path {str} -- Path to the file.
 
         Returns:
          - dict -- dirname, basename, extension
@@ -32,15 +33,15 @@ class Crypto:
         return {'dirname': dirname, 'basename': basename, 'extension': extension}
 
     def __check_password(self, password, password2):
-        """Vérifie la longueur du mot de passe (supérieur à 6 caractères) et
-        contrôle si le mot de passe est identique à le vérification
+        """Checks the length of the password (greater than 6 characters) and 
+        checks if the password is identical to the verification.
 
         Arguments:
-         - password {str} -- Mot de passe
-         - password2 {str} -- Vérification du moit de passe
+         - password {str} -- Password
+         - password2 {str} -- Password confirmation
 
         Returns:
-         - str -- Messages d'erreur ou "pwd_ok"
+         - str -- Error messages or "pwd_ok"
         """
         if len(password) < 6:
             return "len_pwd_error"
@@ -50,14 +51,14 @@ class Crypto:
             return password
 
     def __generate_key_from_pwd(self, password):
-        """Génère une clef de chiffrement à partir d'un mot de passe.
+        """Generates an encryption key from a password.
 
         Arguments:
-         - password {str} -- Mot de passe
-         - password2 {str} -- Confirmation du mot de passe
+         - password {str} -- Password
+         - password2 {str} -- Password confirmation
 
         Returns:
-         - str -- Clé de chiffrement
+         - str -- Encryption key
         """
         password_provided = password
         password = password_provided.encode()  # Convert to type bytes
@@ -74,15 +75,15 @@ class Crypto:
         return key
 
     def encrypt(self, path, password, password2):
-        """Chiffrement d'un fichier avec un mot de passe.
+        """Encrypting a file with a password.
 
         Arguments:
-         - path {str} -- Chemin vers le fichier à chiffrer
-         - password {str} -- Mot de passe
-         - password2 {str} -- Confirmation du mot de passe
+         - path {str} -- Path to the file to encrypt
+         - password {str} -- Password
+         - password2 {str} -- Password confirmation
 
         Returns:
-         - str -- Messages d'erreur ou de confirmation
+         - str -- Error or confirmation messages
         """
         good_password = self.__check_password(password, password2)
 
@@ -112,14 +113,14 @@ class Crypto:
             return "encrypted file"
 
     def decrypt(self, path, password):
-        """Déchiffrement du fichier avec un mot de passe.
+        """Decrypting the file with a password.
 
         Arguments:
-         - path {str} -- Chemin vers le fichier à déchiffrer
-         - password {str} -- Mot de passe
+         - path {str} -- Path to the file to encrypt
+         - password {str} -- Password
 
         Returns:
-         - str -- Messages d'erreur ou de confirmation
+         - str -- Error or confirmation messages
         """
         key = self.__generate_key_from_pwd(password)
         fn = self.__open_file(path)
@@ -154,7 +155,7 @@ if __name__ == "__main__":
     crypto = Crypto()
     os.system('clear')
     print('*' * 80)
-    print('* CHIFFR3MENT - Encrypt files before sending them to friends or coworkers.     *')
+    print('* CHIFFR3MENT - Encrypt the files before sending them to friends or colleagues *')
     print('*' * 80)
 
     Tk().withdraw()

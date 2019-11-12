@@ -5,8 +5,9 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter.messagebox import showerror, showinfo
 
-from core.crypto import *
 from core.check_settings import *
+from core.crypto import *
+
 
 class Chiffrement:
     def __init__(self, root):
@@ -26,14 +27,12 @@ class Chiffrement:
         self.root.configure(bg=self.BG, padx=10, pady=10)
         self.icones()
         self.root.focus_force()
-
         # endregion: INITIALISE WINDOW
 
         # region: FRAME
         self.frm_add = Frame(self.root, bg=self.ACCENT)
         self.frm_encrypt = Frame(self.root, bg=self.ACCENT)
         self.frm_decrypt = Frame(self.root, bg=self.ACCENT)
-
         # endregion: FRAME
 
         # region: LABEL
@@ -64,7 +63,6 @@ class Chiffrement:
                                      font=("Sans Serif", 7), anchor="w")
 
         self.lbl_add.bind("<ButtonRelease-1>", self.open_file)
-
         # endregion: LABEL
 
         # region: ENTRY
@@ -88,7 +86,6 @@ class Chiffrement:
         self.ent_encrypt_pwd.bind("<Return>", self.focus_entry)
         self.ent_encrypt_confirm.bind("<Return>", self.ent_encrypt)
         self.ent_decrypt_pwd.bind("<Return>", self.ent_decrypt)
-
         # endregion: ENTRY
 
         # region: CHECKBUTTON
@@ -111,18 +108,16 @@ class Chiffrement:
                                                 highlightbackground=self.ACCENT,
                                                 activebackground=self.ACCENT,
                                                 command=self.show_pwd_decrypt)
-
         # endregion: CHECKBUTTON
 
         # region: BUTTON
-        self.btn_run = Button(fg="black", relief="flat", 
+        self.btn_run = Button(fg="black", relief="flat",
                               highlightbackground=self.BG)
 
         self.btn_cancel = Button(text=self.MY_LANGUAGE[self.LANGUAGE]["button_cancel"],
                                  fg="black", relief="flat",
                                  command=self.cancel,
                                  highlightbackground=self.BG)
-
         # endregion: BUTTON
 
         # region: PACK
@@ -141,22 +136,21 @@ class Chiffrement:
         self.lbl_decrypt_pwd.pack(fill="x", pady=3)
         self.ent_decrypt_pwd.pack(fill="x", ipady=2)
         self.ckb_show_pwd_decrypt.pack(fill="x")
-
         # endregion: PACK
 
     def get_settings(self):
         """
-        Récupération des paramètres dans le fichier JSON
+        Retrieving parameters in the JSON file
         """
         with open("settings/config.json", "r") as config:
             config = load(config)
-        
+
         with open("settings/themes.json", "r") as theme:
             theme = load(theme)
-        
+
         with open("settings/languages.json", "r") as language:
             self.MY_LANGUAGE = load(language)
-        
+
         self.THEME = config["settings"]["theme"]
         self.LANGUAGE = config["settings"]["language"]
 
@@ -166,34 +160,31 @@ class Chiffrement:
 
     def icones(self):
         """
-        Affiche l'icone en fonction du système d'exploitation"
+        Displays the icon according to the operating system
         """
         if "nt" == name:
             self.root.iconbitmap("icons/icon.ico")
-
         else:
-           img = Image("photo", file="icons/icon.png")
-           self.root.tk.call("wm", "iconphoto", self.root._w, img)
+            img = Image("photo", file="icons/icon.png")
+            self.root.tk.call("wm", "iconphoto", self.root._w, img)
 
     def show_pwd_encrypt(self):
         """
-        Afficher ou masquer le mot de passe de la frame "encrypt"
+        Show or hide the password of the frame 'encrypt'
         """
         if self.ent_encrypt_pwd["show"] == "*":
             self.ent_encrypt_pwd["show"] = ""
             self.ent_encrypt_confirm["show"] = ""
-
         else:
             self.ent_encrypt_pwd["show"] = "*"
             self.ent_encrypt_confirm["show"] = "*"
 
     def show_pwd_decrypt(self):
         """
-        Afficher ou masquer le mot de passe de la frame "decrypt"
+        Show or hide the password of the frame 'decrypt'
         """
         if self.ent_decrypt_pwd["show"] == "*":
             self.ent_decrypt_pwd["show"] = ""
-
         else:
             self.ent_decrypt_pwd["show"] = "*"
 
@@ -206,7 +197,6 @@ class Chiffrement:
                                 command=self.decrypt)
 
             self.frm_decrypt.pack(fill="x", pady=15, anchor="n")
-
         else:
             self.btn_run.config(text=self.MY_LANGUAGE[self.LANGUAGE]["button_encrypt"],
                                 command=self.encrypt)
@@ -228,7 +218,6 @@ class Chiffrement:
                 title=self.MY_LANGUAGE[self.LANGUAGE]["title_openfile"])
 
             self.show_encrypt_decrypt()
-
         except:
             self.cancel()
             showerror(self.MY_LANGUAGE[self.LANGUAGE]["title_window_error"],
@@ -239,7 +228,7 @@ class Chiffrement:
 
     def cancel(self):
         """
-        rafraîchissement de la fenêtre
+        Window refresh
         """
         self.frm_encrypt.pack_forget()
         self.frm_decrypt.pack_forget()
@@ -264,11 +253,9 @@ class Chiffrement:
         if function_encrypted == "len_pwd_error":
             showerror(self.MY_LANGUAGE[self.LANGUAGE]["title_window_error"],
                       self.MY_LANGUAGE[self.LANGUAGE]["msg_error_length_pwd"])
-
         elif function_encrypted == "egal_pwd_error":
             showerror(self.MY_LANGUAGE[self.LANGUAGE]["title_window_error"],
                       self.MY_LANGUAGE[self.LANGUAGE]["msg_error_egal_pwd"])
-
         else:
             showinfo(self.MY_LANGUAGE[self.LANGUAGE]["title_window_success"],
                      self.MY_LANGUAGE[self.LANGUAGE]["msg_success_encrypt"])
@@ -282,7 +269,6 @@ class Chiffrement:
         if function_decrypted == "incorrect_pwd":
             showerror(self.MY_LANGUAGE[self.LANGUAGE]["title_window_error"],
                       self.MY_LANGUAGE[self.LANGUAGE]["msg_error_pwd"])
-
         else:
             showinfo(self.MY_LANGUAGE[self.LANGUAGE]["title_window_success"],
                      self.MY_LANGUAGE[self.LANGUAGE]["msg_success_decrypt"])
