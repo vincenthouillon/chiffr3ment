@@ -250,6 +250,8 @@ class Chiffrement:
         self.ent_encrypt_pwd.delete(0, END)
         self.ent_encrypt_confirm.delete(0, END)
         self.ent_decrypt_pwd.delete(0, END)
+        self.lbl_instruction.config(
+            text=self.MY_LANGUAGE[self.LANGUAGE]["instruction"])
 
         self.frm_add.pack(anchor="center", fill="x", pady=15)
 
