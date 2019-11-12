@@ -14,6 +14,7 @@ class Crypto:
      - Crypto.encrypt(path, password, password_confirmation)
      - Crypto.decrypt(path, password)
     """
+
     def __open_file(self, path):
         """Récupère le chemin du fichier à ouvrir et retourne le chemin, le
         nom du fichier, et le type de fichier.
@@ -26,6 +27,7 @@ class Crypto:
         """
         dirname, basename = os.path.split(path)
         extension = os.path.splitext(basename)[1]
+        basename = os.path.splitext(path)[0]
 
         return {'dirname': dirname, 'basename': basename, 'extension': extension}
 
@@ -78,7 +80,7 @@ class Crypto:
          - path {str} -- Chemin vers le fichier à chiffrer
          - password {str} -- Mot de passe
          - password2 {str} -- Confirmation du mot de passe
-        
+
         Returns:
          - str -- Messages d'erreur ou de confirmation
         """
@@ -102,9 +104,10 @@ class Crypto:
 
             fernet = Fernet(key)
             encrypted = fernet.encrypt(data)
+            extension = fernet.encrypt(bytes(fn['extension'], encoding='utf8'))
 
             with open(output_file, 'wb') as f:
-                f.write(encrypted)
+                f.write(encrypted + b'#' + extension)
 
             return "encrypted file"
 
@@ -114,23 +117,26 @@ class Crypto:
         Arguments:
          - path {str} -- Chemin vers le fichier à déchiffrer
          - password {str} -- Mot de passe
-        
+
         Returns:
          - str -- Messages d'erreur ou de confirmation
         """
         key = self.__generate_key_from_pwd(password)
-
         fn = self.__open_file(path)
 
         input_file = path
-        output_file = os.path.join(fn['dirname'], fn['basename'][:-4])
 
         with open(input_file, 'rb') as f:
             data = f.read()
+            content, extension = data.split(b'#')
 
         try:
             fernet = Fernet(key)
-            encrypted = fernet.decrypt(data)
+            ext = fernet.decrypt(extension)
+            encrypted = fernet.decrypt(content)
+
+            output_file = os.path.join(
+                fn['dirname'], fn['basename'] + ext.decode())
 
             with open(output_file, 'wb') as f:
                 f.write(encrypted)
