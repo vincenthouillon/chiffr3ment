@@ -1,6 +1,6 @@
 from json import load
 from os import chdir, getcwd, name
-from os.path import basename, getsize, join, splitext
+from os.path import basename, dirname, getsize, join, splitext
 from tkinter import *
 from tkinter import filedialog
 from tkinter.messagebox import showerror, showinfo
@@ -11,7 +11,7 @@ from core.crypto import *
 
 class Chiffrement:
     def __init__(self, root):
-        chdir(f"{getcwd()}/..")
+        chdir(dirname(getcwd()))
 
         self.get_settings()
         self.crypt = Crypto()
@@ -210,7 +210,13 @@ class Chiffrement:
         file_name = basename(self.file.name)
         size_name = getsize(self.file.name)/1024
 
-        self.lbl_instruction.config(text=f"{file_name} - {size_name:.2f} MB")
+        # Truncate the file name if it is too long...
+        if len(file_name) > 23:
+            self.lbl_instruction.config(
+                text=f"{file_name[0:20]:.<23} - {size_name:.2f} MB")
+        else:
+            self.lbl_instruction.config(
+                text=f"{file_name} - {size_name:.2f} MB")
 
     def open_file(self, event):
         try:

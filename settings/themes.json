@@ -3,5 +3,10 @@
         "background": "#303032",
         "accent_color": "#F4B444",
         "foreground": "#DFDFE0"
+    },
+    "lightblue": {
+        "background": "#303748",
+        "accent_color": "#74b9ff",
+        "foreground": "#DFDFE0"
     }
 }
