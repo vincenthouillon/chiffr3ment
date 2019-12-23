@@ -22,7 +22,7 @@ class Chiffrement:
         # region: INITIALISE WINDOW
         self.root = root
         self.root.title("chiffr3ment".upper())
-        self.root.geometry(f"250x285")
+        self.root.geometry(f"250x290")
         self.root.resizable(False, False)
         self.root.configure(bg=self.BG, padx=10, pady=10)
         self.icones()
@@ -33,7 +33,13 @@ class Chiffrement:
         self.frm_add = Frame(self.root, bg=self.ACCENT)
         self.frm_encrypt = Frame(self.root, bg=self.ACCENT)
         self.frm_decrypt = Frame(self.root, bg=self.ACCENT)
+        self.frm_config = Frame(self.root, bg=self.BG)
         # endregion: FRAME
+
+        # region: IMAGE
+        self.theme = PhotoImage(file="theme.png")
+        self.language = PhotoImage(file="language.png")
+        # endregion; IMAGE
 
         # region: LABEL
         self.lbl_title = Label(self.root, text="chiffr3ment".upper(),
@@ -61,6 +67,11 @@ class Chiffrement:
                                      text=self.MY_LANGUAGE[self.LANGUAGE]["password"],
                                      bg=self.ACCENT, fg=self.BG,
                                      font=("Sans Serif", 7), anchor="w")
+        
+        self.lbl_theme = Label(self.frm_config, image=self.theme, bg=self.BG)
+
+        self.lbl_language = Label(self.frm_config, image=self.language,
+                                  bg=self.BG)
 
         self.lbl_add.bind("<ButtonRelease-1>", self.open_file)
         # endregion: LABEL
@@ -121,7 +132,7 @@ class Chiffrement:
         # endregion: BUTTON
 
         # region: PACK
-        self.lbl_title.pack()
+        self.lbl_title.pack(anchor="center")
         self.lbl_instruction.pack()
 
         self.lbl_add.pack(fill="x")
@@ -136,6 +147,10 @@ class Chiffrement:
         self.lbl_decrypt_pwd.pack(fill="x", pady=3)
         self.ent_decrypt_pwd.pack(fill="x", ipady=2)
         self.ckb_show_pwd_decrypt.pack(fill="x")
+
+        self.lbl_theme.pack(side="right", padx=2)
+        self.lbl_language.pack(side="right", padx=2)
+        self.frm_config.pack(side="bottom", anchor="w")
         # endregion: PACK
 
     def get_settings(self):
