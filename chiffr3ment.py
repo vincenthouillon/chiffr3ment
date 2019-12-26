@@ -74,6 +74,8 @@ class Chiffrement:
                                   bg=self.BG)
 
         self.lbl_add.bind("<ButtonRelease-1>", self.open_file)
+        self.lbl_theme.bind("<ButtonRelease-1>", self.theme_configuration)
+        self.lbl_language.bind("<ButtonRelease-1>", self.language_configuration)
         # endregion: LABEL
 
         # region: ENTRY
@@ -158,20 +160,20 @@ class Chiffrement:
         Retrieving parameters in the JSON file
         """
         with open("settings/config.json", "r") as config:
-            config = load(config)
+            self.SETTING = load(config)
 
         with open("settings/themes.json", "r") as theme:
-            theme = load(theme)
+            self.MY_THEME = load(theme)
 
         with open("settings/languages.json", "r") as language:
             self.MY_LANGUAGE = load(language)
 
-        self.THEME = config["settings"]["theme"]
-        self.LANGUAGE = config["settings"]["language"]
+        self.THEME = self.SETTING["settings"]["theme"]
+        self.LANGUAGE = self.SETTING["settings"]["language"]
 
-        self.BG = theme[self.THEME]["background"]
-        self.FG = theme[self.THEME]["foreground"]
-        self.ACCENT = theme[self.THEME]["accent_color"]
+        self.BG = self.MY_THEME[self.THEME]["background"]
+        self.FG = self.MY_THEME[self.THEME]["foreground"]
+        self.ACCENT = self.MY_THEME[self.THEME]["accent_color"]
 
     def icones(self):
         """
@@ -295,6 +297,52 @@ class Chiffrement:
                      self.MY_LANGUAGE[self.LANGUAGE]["msg_success_decrypt"])
 
             self.cancel()
+    
+    def window_configuration(self, sett):
+        #region: TOPLEVEL
+        window_config = Toplevel(bg=self.BG)
+        window_config.resizable(False, False)
+        window_config.focus_force()
+        # endregion: TOPLEVEL
+
+        # region: LISTBOX
+        self.lsb = Listbox(window_config, bg=self.BG, fg=self.ACCENT,
+                           highlightbackground=self.BG, highlightcolor=self.BG,
+                           bd=0)
+        
+        self.lsb.bind("<<ListboxSelect>>", lambda x: self.handler(sett))
+        # endregion: LISTBOX
+
+        self.display_configuration(sett)
+
+        window_config.mainloop()
+    
+    def display_configuration(self, sett):
+        for n, i in enumerate(sett, start=1):
+            self.lsb.insert(n, i)
+            self.lsb.pack()
+    
+    def handler(self, sett):
+        select = self.lsb.curselection()
+        new_setting = self.lsb.get(select)
+
+        if sett == self.MY_THEME:
+            self.SETTING["settings"]["theme"] = new_setting
+        
+        else:
+            self.SETTING["settings"]["language"] = new_setting
+
+        with open("settings/config.json", "w") as settings:
+            dump(self.SETTING, settings, indent=4)
+
+        self.root.destroy()
+        main()
+
+    def theme_configuration(self, event):
+        self.window_configuration(self.MY_THEME)
+    
+    def language_configuration(self, event):
+        self.window_configuration(self.MY_LANGUAGE)
 
     def ent_encrypt(self, event):
         self.encrypt()
