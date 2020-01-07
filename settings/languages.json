@@ -12,9 +12,27 @@
         "title_window_success": "Succ\u00e8s",
         "msg_error_file": "Veuillez choisir un fichier",
         "msg_error_length_pwd": "Veuillez saisir un mot de passe d'au moins 6 caract\u00e8res",
-        "msg_error_egal_pwd": "Les mots de passe ne sont pas identique",
+        "msg_error_egal_pwd": "Les mots de passe ne sont pas identiques",
         "msg_success_encrypt": "Votre fichier a bien \u00e9t\u00e9 chiffr\u00e9",
         "msg_success_decrypt": "Votre fichier a bien \u00e9t\u00e9 d\u00e9chiffr\u00e9",
         "msg_error_pwd": "Mot de passe incorrect"
+    },
+    "en": {
+        "instruction": "Click to open a file",
+        "password": "Password",
+        "confirm": "Confirmation",
+        "checkbox_show_password": "Show password",
+        "button_cancel": "Cancel",
+        "button_encrypt": "Encrypt",
+        "button_decrypt": "Decrypt",
+        "title_openfile": "Choose a file",
+        "title_window_error": "Error",
+        "title_window_success": "Succes",
+        "msg_error_file": "Please select a file",
+        "msg_error_length_pwd": "Please enter a password of at least 6 characters",
+        "msg_error_egal_pwd": "Passwords are not identical",
+        "msg_success_encrypt": "Your file has been encrypted",
+        "msg_success_decrypt": "Your file has been decrypted",
+        "msg_error_pwd": "incorrect password"
     }
 }

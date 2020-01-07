@@ -16,9 +16,6 @@ class Chiffrement:
         self.get_settings()
         self.crypt = Crypto()
 
-        self.THEME = "dark"
-        self.LANGUAGE = "fr"
-
         # region: INITIALISE WINDOW
         self.root = root
         self.root.title("chiffr3ment".upper())
@@ -49,6 +46,7 @@ class Chiffrement:
         self.lbl_instruction = Label(self.root,
                                      text=self.MY_LANGUAGE[self.LANGUAGE]["instruction"],
                                      bg=self.BG, fg=self.FG)
+        
 
         self.lbl_add = Label(self.frm_add, text="+", bg=self.ACCENT, fg=self.BG,
                              font=("Sans Serif", 75, "bold"))
