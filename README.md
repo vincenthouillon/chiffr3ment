@@ -21,7 +21,7 @@ Chiffr3ment est multilingue (languages.json) et personnalisable (themes.json), l
 ## Technologies
 Programme écrit avec :
 - Python >= 3.6
-- [cryptography](https://cryptography.io/en/latest/)==2.8
+- [cryptography](https://cryptography.io/en/latest/)==48.0.1
  
 
 ## Plateformes
